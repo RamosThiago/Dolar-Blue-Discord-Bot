@@ -4,7 +4,7 @@ require('dotenv').config();
 
 var fechaAnterior;
 
-const {getValue, getDate} = require('../websc.js');
+const {getValue} = require('../websc.js');
 
 const { Client, IntentsBitField} = require('discord.js');
 
@@ -22,22 +22,45 @@ client.on('ready', (c) => {
 });
 
 client.on('messageCreate', async (msg) => {
+
     console.log(msg.content);
-    if (msg.content.toLowerCase() === 'dolar hoy'){
+
+    if ((msg.content.toLowerCase() === 'dolar hoy') || (msg.content.toLowerCase() === 'dólar hoy')) {
+
         var dolar = await getValue()
-        var fecha = await getDate(fechaAnterior)
-        console.log(fechaAnterior)
-        if (fecha.bool) {
+
+    switch(true) {
+        
+        case dolar[0].porcentaje.indexOf("-") > -1  && dolar[1].porcentaje.indexOf("-") > -1:
+
             msg.reply({
-            content: `Dólar Blue: ${dolar[0].precio} +${dolar[0].porcentaje}
-Dólar Blue GBA: ${dolar[1].precio} +${dolar[1].porcentaje}
-No se actualizó todavia (Última actualización ${fecha.a})`})}
-        else {
+                content: `Dólar Blue: ${dolar[0].precio} ${dolar[0].porcentaje} (Actualizado ${dolar[0].date})
+Dólar Blue GBA: ${dolar[1].precio} ${dolar[1].porcentaje} (Actualizado ${dolar[1].date})`})
+            break;
+
+        case dolar[0].porcentaje.indexOf("-") > -1  && dolar[1].porcentaje.indexOf("-") < -1:
+
             msg.reply({
-            content: `Dólar Blue: ${dolar[0].precio} +${dolar[0].porcentaje}
-Dólar Blue GBA: ${dolar[1].precio} +${dolar[1].porcentaje}
-(Actualizado el ${fecha.a})`})}
-    }
+                content: `Dólar Blue: ${dolar[0].precio} ${dolar[0].porcentaje} (Actualizado ${dolar[0].date})
+Dólar Blue GBA: ${dolar[1].precio} +${dolar[1].porcentaje} (Actualizado ${dolar[1].date})`})
+
+            break;
+
+        case dolar[0].porcentaje.indexOf("-") < -1  && dolar[1].porcentaje.indexOf("-") > -1:
+
+            msg.reply({
+                content: `Dólar Blue: ${dolar[0].precio} +${dolar[0].porcentaje} (Actualizado ${dolar[0].date})
+Dólar Blue GBA: ${dolar[1].precio} ${dolar[1].porcentaje} (Actualizado ${dolar[1].date})`})
+
+            break;
+        
+        default: 
+
+            msg.reply({
+                content: `Dólar Blue: ${dolar[0].precio} +${dolar[0].porcentaje} (Actualizado ${dolar[0].date})
+Dólar Blue GBA: ${dolar[1].precio} +${dolar[1].porcentaje} (Actualizado ${dolar[1].date})`})
+            break;
+    }}
 });
 
 client.login(process.env.TOKEN);
