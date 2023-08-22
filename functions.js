@@ -77,7 +77,7 @@ function formatter(dolares) {
 
 module.exports.formatter = formatter;
 
-module.exports.checker = async function checker() {
+module.exports.checker = async function checker(client) {
 
   let dolares = await getValue();
   let mensaje = formatter(dolares);
@@ -96,7 +96,7 @@ module.exports.checker = async function checker() {
 
         try {
           
-          jsonObject.values.push(dolares);
+          jsonObject.values[0] = dolares;
 
           const nuevoContenido = JSON.stringify(jsonObject, null, 2);
     
@@ -109,8 +109,9 @@ module.exports.checker = async function checker() {
           });
 
           jsonObject.channels.forEach(x => {
-            const channel1 = client.channels.cache.find(channel => channel.id === x.channel);
-            channel1.send(mensaje);
+            const channel0 = client.channels.cache.find(channel => channel.id === x.channel);
+            console.log(channel0);
+            channel0.send(mensaje);
           }) 
 
         } catch (jsonErr) {

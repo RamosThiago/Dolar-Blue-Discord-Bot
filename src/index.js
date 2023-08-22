@@ -3,7 +3,7 @@
 require("dotenv").config();
 
 const fs = require('fs');
-const { getValue, formatter, checker} = require("../websc.js"); // import functions
+const { getValue, formatter, checker} = require("../functions.js"); // import functions
 
 const { Client, IntentsBitField, PermissionsBitField } = require("discord.js");
 const client = new Client({
@@ -19,13 +19,14 @@ client.on("ready", (c) => {
   console.log("Bot prendido.");  // just for in-compiler control
 });
 
-var intervalo = setInterval(() => {  
+var intervalo = setInterval(async() => {  
   if((new Date()).getHours() > 17) {
+    console.log("Fin de mensajes automaticos, tiempo limite alcanzado")
     clearInterval(intervalo);
     return;
   }
-  checker();
-}, 1800000)
+  checker(client);
+}, 900000)
 
 client.on('interactionCreate', async (interaction) => {  // slash commands 
   
