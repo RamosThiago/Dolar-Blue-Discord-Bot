@@ -1,6 +1,8 @@
 const puppeteer = require("puppeteer");
 const fs = require('fs');
 
+const { EmbedBuilder } = require("discord.js");
+
 async function getValue() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -31,19 +33,26 @@ async function getValue() {
   return result;
 };
 
+async function convertir(valorDolar){
+  let dolares = await getValue();
+  return parseInt(dolares[0].precio.slice(1, -3), 10);
+};
+
+module.exports.convertir = convertir;
+
 module.exports.getValue = getValue;
 
-function formatter(dolares) {
+function formatter(client, dolares) {
   let texto = ``;
 
   dolares.forEach((x) => {
     // Si la variacion es positiva agrega un "+"
     let variacion =
-      x.variacion !== "$0.00"
+      x.variacion !== "$0,00"
         ? `, ${
             x.variacion.includes("-")
-              ? x.variacion.replace("$", "")  // Si la variación es negativa no agrega nada pero elimina $
-              : x.variacion.replace("$", "+")
+              ? x.variacion.replace("$", "").replace(",00", "")  // Si la variación es negativa no agrega nada pero elimina $
+              : x.variacion.replace("$", "+").replace(",00", "")
           }`
         : ", *sin variación*";
     // Si el porcentaje es positivo agrega un "+"
@@ -65,14 +74,19 @@ function formatter(dolares) {
 
     let emoji = 
         x.variacion !== "$0.00"
-        ? x.variacion.includes !== "-" 
+        ? x.variacion.includes("-") 
             ? "⬇️💵"
             : "🔥💵"
         : "💵";
 
-      texto += `${emoji} ${nombre}: **${x.precio}**${porcentaje}${variacion} [Actualizado ${x.date}]\n`;
+    texto += `${emoji} ${nombre}: **${x.precio}** ${porcentaje}${variacion} pesos\n\n`;
   });
-  return texto;
+  const embed = new EmbedBuilder()
+      .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
+      .setDescription(texto)
+      .setColor('#4169E1')
+      .setFooter({ text: `Actualizado ${dolares[0].date}`});
+  return embed;
 };
 
 module.exports.formatter = formatter;
@@ -80,7 +94,7 @@ module.exports.formatter = formatter;
 module.exports.checker = async function checker(client) {
 
   let dolares = await getValue();
-  let mensaje = formatter(dolares);
+  let mensaje = formatter(client, dolares);
 
   fs.readFile('./guilds.json', 'utf8', (err, guilds) => {
     if (err) {
@@ -110,8 +124,7 @@ module.exports.checker = async function checker(client) {
 
           jsonObject.channels.forEach(x => {
             const channel0 = client.channels.cache.find(channel => channel.id === x.channel);
-            console.log(channel0);
-            channel0.send(mensaje);
+            channel0.send({ embeds: [mensaje] });
           }) 
 
         } catch (jsonErr) {

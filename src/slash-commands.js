@@ -8,6 +8,34 @@ const commands = [ // set slash commands
     description: 'Hace un ping al bot',
 },
 {
+    name: 'conversor',
+    description: 'Hace la conversión entre dos monedas',
+    options : [
+        {
+            name : 'moneda',
+            description: 'Elegí la moneda que quieras convertir',
+            type : 3,
+            choices : [
+                {
+                name : 'dolar',
+                value : '0'
+            },
+            {
+                name : 'peso',
+                value : '1'
+            }
+            ],   
+            required : true,
+        },
+        {
+            name : 'valor',
+            description: 'El valor que quieras convertir',
+            type : 10,
+            required : true
+        }
+    ]
+},
+{
     name : 'dolar-hoy',
     description: 'Muestra el último valor del dolar',
 },
@@ -39,7 +67,7 @@ const commands = [ // set slash commands
 }
 ];
 
-const rest = new REST( { version: '10' }).setToken(process.env.TOKEN, process.env.GUILD_ID);
+const rest = new REST( { version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
     try {

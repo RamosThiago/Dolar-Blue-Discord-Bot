@@ -3,9 +3,9 @@
 require("dotenv").config();
 
 const fs = require('fs');
-const { getValue, formatter, checker} = require("../functions.js"); // import functions
+const { getValue, formatter, checker, convertir} = require("../functions.js"); // import functions
 
-const { Client, IntentsBitField, PermissionsBitField } = require("discord.js");
+const { Client, IntentsBitField, PermissionsBitField, EmbedBuilder } = require("discord.js");
 const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -26,7 +26,7 @@ var intervalo = setInterval(async() => {
     return;
   }
   checker(client);
-}, 900000)
+}, 3600000)
 
 client.on('interactionCreate', async (interaction) => {  // slash commands 
   
@@ -34,14 +34,29 @@ client.on('interactionCreate', async (interaction) => {  // slash commands
     interaction.reply("pong");
   }
 
-  if (interaction.commandName === 'dolar-hoy'){
+  if (interaction.commandName === 'conversor'){
+    await interaction.deferReply();
+
+    let valorDolar = await convertir();
+    if (interaction.options.get('moneda').value === '0') {
+      let res = interaction.options.get('valor').value * valorDolar;
+      interaction.editReply(`${interaction.options.get('valor').value} dolares son ${res.toLocaleString("en-US")} pesos`);
+    } 
+    else {
+      let res = interaction.options.get('valor').value / valorDolar;
+      interaction.editReply(`${interaction.options.get('valor').value} pesos son ${res.toLocaleString("en-US")} dolares`);
+    }
+  }
+
+  if (interaction.commandName === 'dolar-hoy'){ 
+    await interaction.deferReply();
     let dolares = await getValue();
-    let mensaje = formatter(dolares);
-    interaction.reply(mensaje);
+    let mensaje = formatter(client, dolares);
+    interaction.editReply({ embeds: [mensaje] });
   };
 
   if (interaction.commandName === 'set-channel'){
-
+    await interaction.deferReply();
     if (interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator)) {
 
       fs.readFile('./guilds.json', 'utf8', (err, guilds) => {
@@ -80,10 +95,11 @@ client.on('interactionCreate', async (interaction) => {  // slash commands
         }
       });  
     } else {
-      interaction.reply("Este comando requiere permisos de administrador");
+      interaction.editReply("Este comando requiere permisos de administrador");
     } }
 
   if (interaction.commandName === 'delete-channel'){
+    await interaction.deferReply();
 
     if (interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator)) {
 
@@ -122,8 +138,8 @@ client.on('interactionCreate', async (interaction) => {  // slash commands
           console.error('Error al parsear JSON:', jsonErr);
         }
       }); 
-    } else {
-      interaction.reply("Este comando requiere permisos de administrador");
+    } else { 
+      interaction.editReply("Este comando requiere permisos de administrador");
     }};
 
 });
@@ -133,10 +149,8 @@ client.on("messageCreate", async (msg) => { // text commands
   console.log(msg.content);
   if (msg.content.toLowerCase() === "dolar hoy" || msg.content.toLowerCase() === "dólar hoy") {
     let dolares = await getValue();
-    let mensaje = formatter(dolares);
-    msg.reply({
-      content: mensaje,
-    });
+    let mensaje = formatter(client, dolares);
+    msg.reply({ embeds: [mensaje] });
   }
 });
 
