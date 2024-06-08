@@ -113,22 +113,21 @@ export function getType(name) {
 
 export function currencyFormat(name, amount) {
   const type = getType(name);
-  return `${getSign(type)}${amount} ${getName(type)}`;
+  const format = (amount != 1);
+  const strAmount = amount.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  return `${getSign(type)}${strAmount} ${getName(type, format)}`;
 }
 
 export async function exchange(option, amount, goal) {
   try {
     const goalCurrent = await getCurrency(goal);
     const cant =
-      option == "venta"
+      option == "blue"
         ? amount * goalCurrent.compra
         : amount / goalCurrent.venta;
-    const strCant = cant.toLocaleString("de-DE", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    const strCant = cant.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     let info = {};
-    if (option == "venta") {
+    if (option == "blue") {
       info.desc = `${cant.toLocaleString("de-DE")}`;
     } else {
       info.desc = `${currencyFormat(goal, strCant)}`;
@@ -150,13 +149,13 @@ function getSign(type) {
   }
 }
 
-function getName(type) {
+function getName(type, format) {
   if (type == "dolar") {
-    return "dolares";
+    return `dolar${format ? 'es' : ''}`;
   } else if (type == "euro") {
-    return "euros";
+    return `euro${format ? 's' : ''}`;
   } else if (type == "real") {
-    return "reales";
+    return `real${format ? 'es' : ''}`;
   }
 }
 

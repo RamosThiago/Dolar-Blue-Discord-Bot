@@ -150,7 +150,7 @@ export async function deleteChannel(interaction) {
   }
 }
 
-// Calculo simple con los distintos tipos de cambio obtenidos en la API
+// Calculo con los distintos tipos de cambio obtenidos en la API
 
 export async function calculate(client, option, amount, type) {
   try {
@@ -159,12 +159,12 @@ export async function calculate(client, option, amount, type) {
     let embed = new EmbedBuilder()
       .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
       .setColor('#4169E1')
-    if (option == 'venta') {
-      desc += `El precio de venta de ${currencyFormat(type, amount)} es de  **ARS$${info.desc} pesos**.`;
-      embed.setFooter({text: `Precio de venta para ${type}: ${info.currency.venta}`});
-    } else {
-      desc += `Con ARS$${amount.toLocaleString('de-DE')} pesos se puede comprar **${info.desc}**.`;
+    if (option == 'blue') {
+      desc += `${currencyFormat(type, amount)} ${(amount != 1) ? 'son' : 'es'} **ARS$${info.desc} pesos**.`;
       embed.setFooter({text: `Precio de compra para ${type}: ${info.currency.compra}`});
+    } else {
+      desc += `ARS$${amount.toLocaleString('de-DE')} ${(amount != 1) ? 'pesos argentinos son' : 'peso argentino es'} **${info.desc}**.`;
+      embed.setFooter({text: `Precio de venta para ${type}: ${info.currency.venta}`});
     }
     embed.setDescription(desc);
     return embed;

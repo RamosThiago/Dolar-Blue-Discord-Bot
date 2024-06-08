@@ -66,27 +66,34 @@ client.on('interactionCreate', async (interaction) => {
     const subcommand = interaction.options.getSubcommand();
     await interaction.deferReply();
     if (interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator)) {
-    try {
-      if (subcommand === 'set') {
-        await setChannel(interaction);
-      } else if (subcommand === 'delete') {
-        await deleteChannel(interaction); 
-      }
+      try {
+        if (subcommand === 'set') {
+          await setChannel(interaction);
+        } else if (subcommand === 'delete') {
+          await deleteChannel(interaction); 
+        }
       } catch(error) {
         interaction.editReply({ embeds: [createErrorMessage(client, error, 'Hubo un error al intentar agregar/eliminar el canal.')] });
       }
     }
-  }
-
-  if (interaction.commandName === 'calculadora'){ 
-    await interaction.deferReply();
-    const option = interaction.options.get('opcion').value;
-    const type = interaction.options.get('moneda').value;
-    const amount = interaction.options.get('monto').value;
-    const mensaje = await calculate(client, option, amount, type);
-    interaction.editReply({ embeds: [mensaje] });
   };
 
+  if (interaction.commandName === 'convertir') {
+    const option = interaction.options.getSubcommand();
+    const type = interaction.options.get('divisa').value;
+    const amount = interaction.options.get('monto').value;
+    await interaction.deferReply();
+    if (amount > 0) {
+      try {
+        const mensaje = await calculate(client, option, amount, type);
+        interaction.editReply({ embeds: [mensaje] });
+      } catch(error) {
+        interaction.editReply({ embeds: [createErrorMessage(client, error)] });
+      }
+    } else {
+      interaction.editReply({ content: 'El número tiene que ser mayor a 0'});
+    }
+  };
 });
 
 // Comandos de texto
