@@ -2,7 +2,8 @@
   "name": "dolar-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "type": "module",
+  "main": "app/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +13,6 @@
   "dependencies": {
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
-    "puppeteer": "^20.8.3"
+    "puppeteer": "^22.10.0"
   }
 }
