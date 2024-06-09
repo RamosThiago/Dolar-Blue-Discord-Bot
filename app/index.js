@@ -18,7 +18,8 @@ client.on("ready", (c) => {
 // Intervalo que controla cada media hora (durante los días horas que esté abierto el mercado) si cambió el valor
 
 const intervalo = setInterval(async() => {  
-  if( (new Date().getHours() >= 17) || (new Date().getHours() < 10) || (new Date().getDay < 6) ){
+  const date = new Date();
+  if( (date.getHours() >= 17 || date.getHours() < 10) && (date.getDay >= 1|| date.getDay <= 5)){
     console.log("Fin de mensajes automaticos, tiempo limite alcanzado")
     clearInterval(intervalo);
     return;
