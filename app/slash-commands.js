@@ -11,7 +11,15 @@ const commands = [
   },
   {
     name: "dolar-hoy",
-    description: "Envía el último valor del dolar.",
+    description: "Envía el último valor del dolar blue.",
+  },
+  {
+    name: "euro-hoy",
+    description: "Envía el último valor del euro blue.",
+  },
+  {
+    name: "real-hoy",
+    description: "Envía el último valor del real blue.",
   },
   {
     name: "channel",

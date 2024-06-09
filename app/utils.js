@@ -2,11 +2,10 @@ import { EmbedBuilder } from "discord.js";
 import { getCurrency } from "./fetch.js";
 
 export function descFormat(blue) {
+  const name = blue.titulo;
   const diff = (blue.cierre - blue.venta) * -1;
   const perc = (diff / blue.cierre) * 100;
-  return `${emoji(perc)} ${blue.titulo}: **$${blue.venta},00** (${percFormat(
-    perc
-  )})${diffFormat(diff)}\n\n`;
+  return `${emoji(perc,name)} ${blue.titulo}: **$${blue.venta},00** (${percFormat(perc)})${diffFormat(diff)}\n\n`;
 }
 
 export function lastTime(time) {
@@ -114,8 +113,7 @@ export function getType(name) {
 export function currencyFormat(name, amount) {
   const type = getType(name);
   const format = (amount != 1);
-  const strAmount = amount.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  return `${getSign(type)}${strAmount} ${getName(type, format)}`;
+  return `${getSign(type)}${amount} ${getName(type, format)}`;
 }
 
 export async function exchange(option, amount, goal) {
@@ -125,14 +123,15 @@ export async function exchange(option, amount, goal) {
       option == "blue"
         ? amount * goalCurrent.compra
         : amount / goalCurrent.venta;
-    const strCant = cant.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const strCant = cant.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
     let info = {};
     if (option == "blue") {
-      info.desc = `${cant.toLocaleString("de-DE")}`;
+      info.desc = `${strCant}`;
     } else {
       info.desc = `${currencyFormat(goal, strCant)}`;
     }
     info.currency = goalCurrent;
+    info.cant = strCant;
     return info;
   } catch (error) {
     throw error;
@@ -177,13 +176,25 @@ function diffFormat(diff) {
   return format;
 }
 
-function emoji(perc) {
+function emoji(perc, name) {
   if (perc >= 3) {
-    return "🔥💵";
+    return `🔥${currencyEmoji(name)}`;
   } else if (perc <= -3) {
-    return "⬇️💵";
+    return `⬇️${currencyEmoji(name)}`;
   } else {
+    return `${currencyEmoji(name)}`;
+  }
+}
+
+function currencyEmoji(name){
+  if (name == 'Real Blue') {
+    return "🇧🇷";
+  } else if (name == 'Euro Blue') {
+    return "💶";
+  } else if (name == 'Dólar Blue') {
     return "💵";
+  } else {
+    return "?";
   }
 }
 

@@ -1,11 +1,9 @@
-import { getType } from './utils.js';
-
 // Funciones de fetch sobre la API de FinanzasArgy
 
 export async function getCurrency(name) {
   try{
     const data = await getBlue();
-    const currency = data[getType(name)].find(c => c.titulo === name);
+    const currency = data.find(c => c.titulo === name);
     if (currency) {
       return currency;
     } else {
@@ -51,7 +49,7 @@ export async function lastNews() {
 }
 
 async function getBlue() {
-  const url = 'https://backend-ifa-production-a92c.up.railway.app/api/conversor';
+  const url = 'https://backend-ifa-production-a92c.up.railway.app/api/mercado-blue';
   const headers = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Encoding": "gzip, deflate, br, zstd",

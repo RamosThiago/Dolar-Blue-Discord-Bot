@@ -9,7 +9,7 @@ function blueMessage(client, blue){
       .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
       .setDescription(descFormat(blue))
       .setColor('#4169E1')
-      .setFooter({ text: `Actualizado ${lastTime(blue.lastUpdate)}`});
+      .setFooter({ text: `Actualizado ${lastTime(blue.updatedAt)}`});
   return embed;
 }
 
@@ -160,15 +160,15 @@ export async function calculate(client, option, amount, type) {
       .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
       .setColor('#4169E1')
     if (option == 'blue') {
-      desc += `${currencyFormat(type, amount)} ${(amount != 1) ? 'son' : 'es'} **ARS$${info.desc} pesos**.`;
+      desc += `${currencyFormat(type, amount)} ${(info.cant != 1) ? 'son' : 'es'} **ARS$${info.desc} pesos**.`;
       embed.setFooter({text: `Precio de compra para ${type}: ${info.currency.compra}`});
     } else {
-      desc += `ARS$${amount.toLocaleString('de-DE')} ${(amount != 1) ? 'pesos argentinos son' : 'peso argentino es'} **${info.desc}**.`;
+      desc += `ARS$${amount.toLocaleString('de-DE')} ${(amount != 1) ? 'pesos argentinos' : 'peso argentino'} ${(info.cant != 1) ? 'son' : 'es'} **${info.desc}**.`;
       embed.setFooter({text: `Precio de venta para ${type}: ${info.currency.venta}`});
     }
     embed.setDescription(desc);
     return embed;
   } catch (error) {
-    return createErrorMessage(client, error, 'hubo un error al intentar acceder a la API.', true);
+    return createErrorMessage(client, error);
   }
 }

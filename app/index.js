@@ -44,6 +44,18 @@ client.on('interactionCreate', async (interaction) => {
     interaction.editReply({ embeds: [mensaje] });
   };
 
+  if (interaction.commandName === 'euro-hoy'){ 
+    await interaction.deferReply();
+    const mensaje = await displayBlue(client, 'Euro Blue');
+    interaction.editReply({ embeds: [mensaje] });
+  };
+
+  if (interaction.commandName === 'real-hoy'){ 
+    await interaction.deferReply();
+    const mensaje = await displayBlue(client, 'Real Blue');
+    interaction.editReply({ embeds: [mensaje] });
+  };
+
   if (interaction.commandName === 'inflacion') {
     const subcommand = interaction.options.getSubcommand();
     let mensaje;
@@ -101,9 +113,21 @@ client.on('interactionCreate', async (interaction) => {
 client.on("messageCreate", async (msg) => { 
   console.log(msg.content);
 
-  if (msg.content.toLowerCase() === "dolar hoy" || msg.content.toLowerCase() === "dólar hoy") {
+  if (/^d[oó]lar (hoy|blue)$/i.test(msg.content)) {
     msg.channel.sendTyping();
     let mensaje = await displayBlue(client, 'Dólar Blue');
+    msg.reply({ embeds: [mensaje] });
+  }
+
+  if (/^euro (hoy|blue)$/i.test(msg.content)) {
+    msg.channel.sendTyping();
+    let mensaje = await displayBlue(client, 'Euro Blue');
+    msg.reply({ embeds: [mensaje] });
+  }
+
+  if (/^real (hoy|blue)$/i.test(msg.content)) {
+    msg.channel.sendTyping();
+    let mensaje = await displayBlue(client, 'Real Blue');
     msg.reply({ embeds: [mensaje] });
   }
 
