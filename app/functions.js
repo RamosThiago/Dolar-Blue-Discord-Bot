@@ -1,52 +1,51 @@
-import puppeteer from 'puppeteer';
-import { readFile, writeFile } from 'fs/promises';
-import { EmbedBuilder } from 'discord.js';
-import { getCurrency, lastNews } from "./fetch.js";
-import { descFormat, lastTime, inflationMessage, getUrl, compareNews, createErrorMessage, exchange, currencyFormat } from "./utils.js";
+import { EmbedBuilder } from "discord.js";
+import { readFile, writeFile } from "fs/promises";
+import puppeteer from "puppeteer";
+import { getCurrency, getDatosArgy, lastNews } from "./fetch.js";
+import {
+  compareNews,
+  createErrorMessage,
+  currencyFormat,
+  descFormat,
+  exchange,
+  getUrl,
+  inflationMessage,
+  lastTime,
+} from "./utils.js";
 
-function blueMessage(client, blue){ 
+function blueMessage(client, blue) {
   const embed = new EmbedBuilder()
-      .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
-      .setDescription(descFormat(blue))
-      .setColor('#4169E1')
-      .setFooter({ text: `Actualizado ${lastTime(blue.updatedAt)}`});
+    .setAuthor({
+      name: "Dólar Bot",
+      iconURL: client.user.displayAvatarURL(),
+      url: "https://www.finanzasargy.com/",
+    })
+    .setDescription(descFormat(blue))
+    .setColor("#4169E1")
+    .setFooter({ text: `Actualizado ${lastTime(blue.updatedAt)}` });
   return embed;
-}
-
-async function update(dolarBlue) {
-  try {
-    const actual = dolarBlue.venta;
-    const data = await readFile('./app/data/guilds.json', 'utf8');
-    const jsonObject = JSON.parse(data);
-    if (actual !== jsonObject.lastValue.venta) {
-      jsonObject.lastValue.venta = actual;
-      const changedJson = JSON.stringify(jsonObject, null, 2);
-      await writeFile('./app/data/guilds.json', changedJson, 'utf8');
-    }
-  } catch (error) {
-    throw error;
-  }
 }
 
 // Revisa si el valor obtenido es diferente al guardado, si es asi lo guarda en el json y actualiza en todos los canales registrados
 
 export async function checker(client) {
   try {
-    const dolarBlue = await getCurrency('Dólar Blue');
+    const dolarBlue = await getCurrency("Dólar Blue");
     const actual = dolarBlue.venta;
-    const data = await readFile('./app/data/guilds.json', 'utf8');
+    const data = await readFile("./app/data/guilds.json", "utf8");
     const jsonObject = JSON.parse(data);
+    console.log("Actual: " + actual + " - Last: " + jsonObject.lastValue.venta);
     if (actual !== jsonObject.lastValue.venta) {
       jsonObject.lastValue.venta = actual;
       const mensaje = blueMessage(client, dolarBlue);
       const changedJson = JSON.stringify(jsonObject, null, 2);
-      await writeFile('./app/data/guilds.json', changedJson, 'utf8');
-      jsonObject.channels.forEach(json => {
-        const ch = client.channels.cache.find(c => c.id === json.channel);
-        ch.send({ embeds: [mensaje] });  
-      })
+      await writeFile("./app/data/guilds.json", changedJson, "utf8");
+      jsonObject.channels.forEach((json) => {
+        const ch = client.channels.cache.find((c) => c.id === json.channel);
+        ch.send({ embeds: [mensaje] });
+      });
     } else {
-      console.log('No se actualizó los canales: valor repetido')
+      console.log("No se actualizó los canales: valor repetido");
     }
   } catch (error) {
     throw error;
@@ -56,10 +55,14 @@ export async function checker(client) {
 export async function displayBlue(client, name) {
   try {
     const blue = await getCurrency(name);
-    (blue.titulo === 'Dólar Blue') ? await update(blue) : "";
     return blueMessage(client, blue);
-  } catch(error) {
-    const embed = createErrorMessage(client, error, 'hubo un error al intentar acceder a la API.', true);
+  } catch (error) {
+    const embed = createErrorMessage(
+      client,
+      error,
+      "hubo un error al intentar acceder a la API.",
+      true
+    );
     return embed;
   }
 }
@@ -78,32 +81,41 @@ export async function displayIpc(client, monthly) {
     });
     await browser.close();
     return inflationMessage(client, ipc, monthly);
-  } catch(error){
+  } catch (error) {
     return createErrorMessage(client, error);
   }
-};
+}
 
 // Obtiene las noticias de la API y genera un embed ordenado según la prioridad
 
-export async function displayNews(client){
+export async function displayNews(client) {
   let embed;
   try {
     let news = await lastNews();
     let desc = "";
     news.sort(compareNews);
-    news.forEach((x)=> {
-      desc += `- [${(x.priority === "ATENCIÓN") ? "AHORA: " : ""}${x.title}](${(x.link) 
-        ? `${x.link}`
-        : "https://www.finanzasargy.com/"}
-      )\n\n`
+    news.forEach((x) => {
+      desc += `- [${x.priority === "ATENCIÓN" ? "AHORA: " : ""}${x.title}](${
+        x.link ? `${x.link}` : "https://www.finanzasargy.com/"
+      }
+      )\n\n`;
     });
     desc += `\n`;
     embed = new EmbedBuilder()
-        .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
-        .setDescription(desc)
-        .setColor('#d6e8f5')
-  } catch(error) {
-    embed = createErrorMessage(client, error, 'hubo un error al intentar acceder a la API.', true)
+      .setAuthor({
+        name: "Dólar Bot",
+        iconURL: client.user.displayAvatarURL(),
+        url: "https://www.finanzasargy.com/",
+      })
+      .setDescription(desc)
+      .setColor("#d6e8f5");
+  } catch (error) {
+    embed = createErrorMessage(
+      client,
+      error,
+      "hubo un error al intentar acceder a la API.",
+      true
+    );
   } finally {
     return embed;
   }
@@ -111,19 +123,23 @@ export async function displayNews(client){
 
 export async function setChannel(interaction) {
   try {
-    const guilds = await readFile('./app/data/guilds.json', 'utf8');
+    const guilds = await readFile("./app/data/guilds.json", "utf8");
     const newCh = {
       serverid: interaction.guildId,
-      channel: interaction.options.get('channel').value
-    };           
+      channel: interaction.options.get("channel").value,
+    };
     const jsonObject = JSON.parse(guilds);
-    const server = jsonObject.channels.find(x => x.serverid === newCh.serverid);
-    (server) ? server.channel = newCh.channel : jsonObject.channels.push(newCh);
+    const server = jsonObject.channels.find(
+      (x) => x.serverid === newCh.serverid
+    );
+    server ? (server.channel = newCh.channel) : jsonObject.channels.push(newCh);
     const changedJson = JSON.stringify(jsonObject, null, 2);
-    await writeFile('./app/data/guilds.json', changedJson, 'utf8');
-    await interaction.editReply('El bot ahora actualizará el precio en ' + '<#' + newCh.channel + '>');
+    await writeFile("./app/data/guilds.json", changedJson, "utf8");
+    await interaction.editReply(
+      "El bot ahora actualizará el precio en " + "<#" + newCh.channel + ">"
+    );
   } catch (error) {
-    console.log('Error en la función setChannel: '+error);
+    console.log("Error en la función setChannel: " + error);
     throw error;
   }
 }
@@ -131,21 +147,25 @@ export async function setChannel(interaction) {
 export async function deleteChannel(interaction) {
   try {
     const newCh = {
-      channel: interaction.options.get('channel').value,
+      channel: interaction.options.get("channel").value,
     };
-    const guilds = await readFile('./app/data/guilds.json', 'utf8');
+    const guilds = await readFile("./app/data/guilds.json", "utf8");
     const jsonObject = JSON.parse(guilds);
-    const index = jsonObject.channels.findIndex(x => x.channel === newCh.channel);
+    const index = jsonObject.channels.findIndex(
+      (x) => x.channel === newCh.channel
+    );
     if (index !== -1) {
       jsonObject.channels.splice(index, 1);
       const newJson = JSON.stringify(jsonObject, null, 2);
-      await writeFile('./app/data/guilds.json', newJson, 'utf8');
-      await interaction.editReply('Se eliminó de la lista el canal ' + '<#' + newCh.channel + '>');
+      await writeFile("./app/data/guilds.json", newJson, "utf8");
+      await interaction.editReply(
+        "Se eliminó de la lista el canal " + "<#" + newCh.channel + ">"
+      );
     } else {
-      await interaction.editReply('El canal seleccionado no está en la lista');
+      await interaction.editReply("El canal seleccionado no está en la lista");
     }
   } catch (error) {
-    console.log('Error en la función deleteChannel: '+error);
+    console.log("Error en la función deleteChannel: " + error);
     throw error;
   }
 }
@@ -157,18 +177,71 @@ export async function calculate(client, option, amount, type) {
     const info = await exchange(option, amount, type);
     let desc = "";
     let embed = new EmbedBuilder()
-      .setAuthor({ name: 'Dólar Bot', iconURL: client.user.displayAvatarURL(), url: 'https://www.finanzasargy.com/' })
-      .setColor('#4169E1')
-    if (option == 'blue') {
-      desc += `${currencyFormat(type, amount)} ${(info.cant != 1) ? 'son' : 'es'} **ARS$${info.desc} pesos**.`;
-      embed.setFooter({text: `Precio de compra para ${type}: ${info.currency.compra}`});
+      .setAuthor({
+        name: "Dólar Bot",
+        iconURL: client.user.displayAvatarURL(),
+        url: "https://www.finanzasargy.com/",
+      })
+      .setColor("#4169E1");
+    if (option == "blue") {
+      desc += `${currencyFormat(type, amount)} ${
+        info.cant != 1 ? "son" : "es"
+      } **ARS$${info.desc} pesos**.`;
+      embed.setFooter({
+        text: `Precio de compra para ${type}: ${info.currency.compra}`,
+      });
     } else {
-      desc += `ARS$${amount.toLocaleString('de-DE')} ${(amount != 1) ? 'pesos argentinos' : 'peso argentino'} ${(info.cant != 1) ? 'son' : 'es'} **${info.desc}**.`;
-      embed.setFooter({text: `Precio de venta para ${type}: ${info.currency.venta}`});
+      desc += `ARS$${amount.toLocaleString("de-DE")} ${
+        amount != 1 ? "pesos argentinos" : "peso argentino"
+      } ${info.cant != 1 ? "son" : "es"} **${info.desc}**.`;
+      embed.setFooter({
+        text: `Precio de venta para ${type}: ${info.currency.venta}`,
+      });
     }
     embed.setDescription(desc);
     return embed;
   } catch (error) {
     return createErrorMessage(client, error);
+  }
+}
+
+export async function getRiesgoPais(client) {
+  try {
+    const datos = await getDatosArgy();
+    const objRiesgo = datos.find((obj) => obj["NOMBRE"] === "Riesgo país");
+
+    if (objRiesgo) {
+      const riesgoPais = objRiesgo["ULTIMO-VALOR"];
+      const ultimaActualizacion = objRiesgo["ÚLTIMA ACTUALIZACION"];
+      const ultimoDato = objRiesgo["ANTE-ULTIMO-DATO"].value;
+      let emoji = "";
+
+      console.log("Riesgo país: " + riesgoPais);
+      console.log("Último dato: " + ultimoDato);
+
+      if (riesgoPais > ultimoDato) {
+        emoji = "⬆️";
+      } else if (riesgoPais < ultimoDato) {
+        emoji = "⬇️";
+      }
+
+      let desc = `**Riesgo país**: ${emoji} ${riesgoPais} puntos`;
+
+      const embed = new EmbedBuilder()
+        .setAuthor({
+          name: "Dólar Bot",
+          iconURL: client.user.displayAvatarURL(),
+          url: "https://www.finanzasargy.com/datos-argy",
+        })
+        .setDescription(desc)
+        .setColor("#4169E1")
+        .setFooter({ text: `Ultima actualizacion: ${ultimaActualizacion}` });
+      return embed;
+    } else {
+      console.log('No se encontró el objeto con la clave "Riesgo país".');
+    }
+    return;
+  } catch (error) {
+    console.log(error);
   }
 }

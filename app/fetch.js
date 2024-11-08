@@ -1,13 +1,13 @@
 // Funciones de fetch sobre la API de FinanzasArgy
 
 export async function getCurrency(name) {
-  try{
+  try {
     const data = await getBlue();
-    const currency = data.find(c => c.titulo === name);
+    const currency = data.find((c) => c.titulo === name);
     if (currency) {
       return currency;
     } else {
-      console.log('Nombre no encontrado');
+      console.log("Nombre no encontrado");
       return {};
     }
   } catch (error) {
@@ -16,62 +16,30 @@ export async function getCurrency(name) {
 }
 
 export async function lastNews() {
-  const url = 'https://backend-ifa-production-a92c.up.railway.app/api/floating-news';
+  const url =
+    "https://backend-ifa-production-a92c.up.railway.app/api/floating-news";
   const headers = {
-    "Accept": "*/*",
+    Accept: "*/*",
     "Accept-Encoding": "gzip, deflate, br, zstd",
     "Accept-Language": "es-419, es;q=0.7",
     "Api-Client": "finanzasargy",
-    "If-None-Match": "W/\"b8d-LOUvw6UP8i04Q6Z2LxVCzwOKQRo\"",
-    "Origin": "https://www.finanzasargy.com",
-    "Priority": "u=1, i",
-    "Referer": "https://www.finanzasargy.com/",
-    "Sec-Ch-Ua": "\"Brave\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"",
+    "If-None-Match": 'W/"b8d-LOUvw6UP8i04Q6Z2LxVCzwOKQRo"',
+    Origin: "https://www.finanzasargy.com",
+    Priority: "u=1, i",
+    Referer: "https://www.finanzasargy.com/",
+    "Sec-Ch-Ua": '"Brave";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
     "Sec-Ch-Ua-Mobile": "?1",
-    "Sec-Ch-Ua-Platform": "\"Android\"",
+    "Sec-Ch-Ua-Platform": '"Android"',
     "Sec-Fetch-Dest": "empty",
     "Sec-Fetch-Mode": "cors",
     "Sec-Fetch-Site": "cross-site",
     "Sec-Gpc": "1",
-    "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
-    };
+    "User-Agent":
+      "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+  };
 
   try {
-    const response = await fetch(url, {headers});
-    if (!response.ok) {
-      throw new Error(response.status);
-  }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getBlue() {
-  const url = 'https://backend-ifa-production-a92c.up.railway.app/api/mercado-blue';
-  const headers = {
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "Accept-Language": "es-419, es;q=0.5",
-    "Api-Client": "finanzasargy",
-    "Cache-Control": "no-cache",
-    "Origin": "https://www.finanzasargy.com",
-    "Pragma": "no-cache",
-    "Priority": "u=1, i",
-    "Referer": "https://www.finanzasargy.com/",
-    "Sec-Ch-Ua": "\"Brave\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"",
-    "Sec-Ch-Ua-Mobile": "?1",
-    "Sec-Ch-Ua-Platform": "\"Android\"",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "cross-site",
-    "Sec-Gpc": "1",
-    "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
-    };
-
-  try {
-    const response = await fetch(url, {headers});
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error(response.status);
     }
@@ -80,4 +48,76 @@ async function getBlue() {
   } catch (error) {
     throw error;
   }
-};
+}
+
+async function getBlue() {
+  const url =
+    "https://backend-ifa-production-a92c.up.railway.app/api/mercado-blue";
+  const headers = {
+    Accept: "application/json, text/plain, */*",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "es-419, es;q=0.5",
+    "Api-Client": "finanzasargy",
+    "Cache-Control": "no-cache",
+    Origin: "https://www.finanzasargy.com",
+    Pragma: "no-cache",
+    Priority: "u=1, i",
+    Referer: "https://www.finanzasargy.com/",
+    "Sec-Ch-Ua": '"Brave";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+    "Sec-Ch-Ua-Mobile": "?1",
+    "Sec-Ch-Ua-Platform": '"Android"',
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "cross-site",
+    "Sec-Gpc": "1",
+    "User-Agent":
+      "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+  };
+
+  try {
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getDatosArgy() {
+  const url =
+    "https://backend-ifa-production-a92c.up.railway.app/api/macro-economic/fetch-data";
+  const headers = {
+    Accept: "*/*",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "es-419, es;q=0.8",
+    "Api-Client": "finanzasargy",
+    "Cache-Control": "no-cache",
+    Origin: "https://www.finanzasargy.com",
+    Pragma: "no-cache",
+    Priority: "u=1, i",
+    Referer: "https://www.finanzasargy.com/",
+    "Sec-Ch-Ua": "Chromium;v=130, Brave;v=130, Not?A_Brand;v=99",
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": "Windows",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "cross-site",
+    "Sec-Gpc": "1",
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+  };
+
+  try {
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}

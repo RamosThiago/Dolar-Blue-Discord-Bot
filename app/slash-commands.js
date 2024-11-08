@@ -1,6 +1,6 @@
+import { ApplicationCommandOptionType, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
-import { REST, Routes, ApplicationCommandOptionType } from "discord.js";
 
 // (!!) Ejecutar la primera vez o cada vez que se cambie algo para guardar los cambios
 
@@ -27,12 +27,14 @@ const commands = [
     options: [
       {
         name: "set",
-        description: "Establece un canal donde el bot actualizará el precio del dólar.",
+        description:
+          "Establece un canal donde el bot actualizará el precio del dólar.",
         type: 1,
         options: [
           {
             name: "channel",
-            description: "Desactivar las actualizaciones del bot en un canal anteriormente establecido.",
+            description:
+              "Desactivar las actualizaciones del bot en un canal anteriormente establecido.",
             type: 7,
             required: true,
             channel_types: [0],
@@ -56,17 +58,19 @@ const commands = [
     ],
   },
   {
-    name: "inflacion",
-    description: "Mostrar la variación del IPC en Argentina",
+    name: "canasta-basica",
+    description:
+      "Mostrar la variación de los precios de la canasta basica en Argentina",
     options: [
       {
         name: "diaria",
-        description: "Muestra la inflación diaria.",
+        description: "Muestra la variacion de la canasta basica diaria.",
         type: 1,
       },
       {
         name: "mensual",
-        description: "Muestra la inflación en lo que va del mes.",
+        description:
+          "Muestra la variacion de la canasta basica en lo que va del mes.",
         type: 1,
       },
     ],
@@ -101,33 +105,46 @@ const commands = [
             description: "monto de pesos argentinos a convertir a cambio blue",
             required: true,
           },
-        ]
+        ],
       },
       {
         name: "blue",
         type: 1,
         description: "convertir alguna divisa blue a pesos argentinos",
         options: [
-            {
-              name: "divisa",
-              type: ApplicationCommandOptionType.String,
-              description: "tipo de cambio blue a convertir",
-              required: true,
-              choices: [
-                { name: "Dolar Blue", value: "Dólar Blue" },
-                { name: "Euro Blue", value: "Euro Blue" },
-                { name: "Real Blue", value: "Real Blue" },
-              ],
-            },
-            {
-              name: "monto",
-              type: ApplicationCommandOptionType.Number,
-              description: "monto de divisa blue a convertir a pesos argentinos",
-              required: true,
-            },
-        ]
+          {
+            name: "divisa",
+            type: ApplicationCommandOptionType.String,
+            description: "tipo de cambio blue a convertir",
+            required: true,
+            choices: [
+              { name: "Dolar Blue", value: "Dólar Blue" },
+              { name: "Euro Blue", value: "Euro Blue" },
+              { name: "Real Blue", value: "Real Blue" },
+            ],
+          },
+          {
+            name: "monto",
+            type: ApplicationCommandOptionType.Number,
+            description: "monto de divisa blue a convertir a pesos argentinos",
+            required: true,
+          },
+        ],
       },
     ],
+  },
+  {
+    name: "riesgo-pais",
+    description: "Ver el ultimo dato de riesgo pais en Argentina",
+  },
+  {
+    name: "inflacion",
+    description:
+      "Envía el ultimo dato de inflacion en Argentina segun el Indec",
+  },
+  {
+    name: "datos-economicos",
+    description: "Envía los ultimos datos económicos de Argentina",
   },
 ];
 
