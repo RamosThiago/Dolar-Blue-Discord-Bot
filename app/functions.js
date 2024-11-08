@@ -214,6 +214,8 @@ export async function getRiesgoPais(client) {
       const riesgoPais = objRiesgo["ULTIMO-VALOR"];
       const ultimaActualizacion = objRiesgo["ÚLTIMA ACTUALIZACION"];
       const ultimoDato = objRiesgo["ANTE-ULTIMO-DATO"].value;
+      const diferencia = (riesgoPais - ultimoDato) / 100;
+      const strDiff = diferencia > 0 ? `+${diferencia}` : diferencia;
       let emoji = "";
 
       console.log("Riesgo país: " + riesgoPais);
@@ -225,7 +227,7 @@ export async function getRiesgoPais(client) {
         emoji = "⬇️";
       }
 
-      let desc = `**Riesgo país**: ${emoji} ${riesgoPais} puntos`;
+      let desc = `**Riesgo país**: ${emoji} ${riesgoPais} puntos (${strDiff}%)`;
 
       const embed = new EmbedBuilder()
         .setAuthor({
@@ -239,6 +241,52 @@ export async function getRiesgoPais(client) {
       return embed;
     } else {
       console.log('No se encontró el objeto con la clave "Riesgo país".');
+    }
+    return;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInflacion(client) {
+  try {
+    const datos = await getDatosArgy();
+    const objInflacion = datos.find(
+      (obj) => obj["NOMBRE"] === "Inflación (IPC)"
+    );
+
+    if (objInflacion) {
+      const inflacion = objInflacion["ULTIMO-VALOR"];
+      const ultimaActualizacion = objInflacion["ÚLTIMA ACTUALIZACION"];
+      const ultimoDato = objInflacion["ANTE-ULTIMO-DATO"].value;
+      const diferencia = (inflacion - ultimoDato).toFixed(1);
+      const strDiff = diferencia > 0 ? `+${diferencia}` : diferencia;
+
+      let emoji = "";
+
+      console.log(inflacion);
+      console.log(ultimoDato);
+
+      if (inflacion > ultimoDato) {
+        emoji = "⬆️";
+      } else if (inflacion < ultimoDato) {
+        emoji = "⬇️";
+      }
+
+      let desc = `**Inflacion mensual**: ${emoji} ${inflacion} puntos (${strDiff}%)`;
+
+      const embed = new EmbedBuilder()
+        .setAuthor({
+          name: "Dólar Bot",
+          iconURL: client.user.displayAvatarURL(),
+          url: "https://www.finanzasargy.com/datos-argy",
+        })
+        .setDescription(desc)
+        .setColor("#4169E1")
+        .setFooter({ text: `Ultima actualizacion: ${ultimaActualizacion}` });
+      return embed;
+    } else {
+      console.log('No se encontró el objeto con la clave "Inflacion".');
     }
     return;
   } catch (error) {

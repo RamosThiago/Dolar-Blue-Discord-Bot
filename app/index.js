@@ -7,6 +7,7 @@ import {
   displayBlue,
   displayIpc,
   displayNews,
+  getInflacion,
   getRiesgoPais,
   setChannel,
 } from "./functions.js";
@@ -67,7 +68,7 @@ client.on("interactionCreate", async (interaction) => {
     interaction.editReply({ embeds: [mensaje] });
   }
 
-  if (interaction.commandName === "canasta") {
+  if (interaction.commandName === "canasta-basica") {
     const subcommand = interaction.options.getSubcommand();
     let mensaje;
     await interaction.deferReply();
@@ -136,6 +137,7 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "inflacion") {
     await interaction.deferReply();
+    const mensaje = await getInflacion(client);
     interaction.editReply({ embeds: [mensaje] });
   }
 
